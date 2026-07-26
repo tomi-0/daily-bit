@@ -26,10 +26,11 @@ Pulled from established, reputable outlets — not aggregators or SEO content fa
 | Layer | Choice |
 |---|---|
 | Frontend | React + Vite |
-| Backend | Node.js + Express |
-| Database | PostgreSQL via Supabase |
+| Backend | Python + FastAPI |
+| Database | PostgreSQL via Supabase (Python client) |
+| Data validation | Pydantic |
 | Scheduler | GitHub Actions (cron) |
-| Ingestion | RSS feeds / news APIs (`rss-parser`) |
+| Ingestion | RSS feeds / news APIs (`feedparser` or `httpx`) |
 | Summarization & keyword extraction | LLM API (Claude/OpenAI) |
 
 ## 🏗️ Architecture
@@ -38,18 +39,18 @@ Pulled from established, reputable outlets — not aggregators or SEO content fa
 Scheduler (daily cron)
         │
         ▼
-Ingestion service ── pulls latest articles per category from RSS/news APIs
+Ingestion script (Python) ── pulls latest articles per category from RSS/news APIs
         │
         ▼
-LLM processing agent ── generates summary + extracts keywords per article
+LLM processing agent ── generates summary + extracts keywords, validated into Pydantic models
         │
         ├──▶ Glossary lookup ── reuses cached term definitions, or generates + caches new ones
         │
         ▼
-Database (Postgres) ── stores articles, keywords, and definitions
+Database (Postgres via Supabase) ── stores articles, keywords, and definitions
         │
         ▼
-Backend API (Express) ── serves articles and glossary terms
+Backend API (FastAPI) ── serves articles and glossary terms, auto-documented at /docs
         │
         ▼
 Frontend (React) ── displays category feeds with inline definitions and source links
@@ -57,9 +58,33 @@ Frontend (React) ── displays category feeds with inline definitions and sour
 
 ## 🗄️ Database schema (draft)
 
+Defined as Pydantic models in `server/app/models/schemas.py`, mapped to Postgres tables:
+
 - **articles** — `id`, `title`, `summary`, `source_url`, `source_name`, `category`, `published_at`
 - **keywords** — `id`, `term`, `definition`
 - **article_keywords** — `article_id`, `keyword_id` (join table)
+
+## 📁 Project structure
+
+```
+dailybit/
+├── client/            # React + Vite frontend
+│   └── src/
+│       ├── components/
+│       ├── api/
+│       └── App.jsx
+├── server/            # FastAPI backend
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── routers/
+│   │   ├── models/
+│   │   ├── services/
+│   │   └── db/
+│   └── scripts/
+│       └── run_daily_pipeline.py
+└── .github/workflows/
+    └── daily-digest.yml
+```
 
 ## 🚀 Getting started
 
@@ -69,8 +94,10 @@ cd dailybit
 
 # backend
 cd server
-npm install
-npm run dev
+python -m venv venv
+source venv/bin/activate  # on Windows: venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
 
 # frontend
 cd ../client
@@ -85,6 +112,8 @@ SUPABASE_URL=
 SUPABASE_KEY=
 LLM_API_KEY=
 ```
+
+FastAPI's interactive docs are available at `http://localhost:8000/docs` once the backend is running.
 
 ## 🧭 Roadmap
 
