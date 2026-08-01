@@ -1,0 +1,39 @@
+name: Fetch RSS Feeds
+
+# Controls when the workflow will run
+on:
+  schedule:
+  # Workflow runs at 00:00 every day
+    - cron: "0 0 * * *"
+  # a manual trigger 
+  workflow_dispatch:
+
+# push step may fail silently or error out - default GITHUB_TOKEN to read-only
+permissions:
+  contents: write
+  
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "fetch-rss"
+  fetch-rss:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code repo
+        uses: actions/checkout@v4
+     
+      # Runs a single command using the runners shell
+      - name: Fetch TechCrunch
+        uses: Promptly-Technologies-LLC/rss-fetch-action@v2
+        with:
+          feed_url: https://techcrunch.com/feed/
+          file_path: ./data/techcrunch.json
+
+      - name: Commit and push changes to repository
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'Updated RSS feed'
+          file_pattern: 'data/*.json'
