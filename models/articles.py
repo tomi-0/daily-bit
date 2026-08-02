@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from uuid import uuid4
+from pydantic import BaseModel, Field
+from uuid import uuid4, UUID
 from enum import Enum
 from datetime import date
 
@@ -10,11 +10,12 @@ from datetime import date
 # .model_json_schema()- dictionary representing your model’s JSON schema
 
 class Category(Enum):
-  TECH = "TECH",
-  FINANCE = "FINANCE"
+  TECH= "TECH" 
+  FINANCE= "FINANCE"
+  FINTECH= "FINTECH"
 
 class RawArticle(BaseModel):
-  id = uuid4()
+  # id: UUID = Field(default_factory=uuid4) # callS function fresh, once per instance
   title: str
   summary: str 
   source_url: str
@@ -23,6 +24,13 @@ class RawArticle(BaseModel):
   published_at: date
 
 class Keyword(BaseModel):
-  id = uuid4()
+  id: UUID = Field(default_factory=uuid4)
   term: str
   definition: str
+
+class LLMOutput(RawArticle):
+  longer_summary: str
+  keywords: list[str]
+
+class Article(RawArticle):
+  pass
