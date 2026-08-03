@@ -101,6 +101,7 @@ if __name__ == "__main__":
             .insert(json.loads(a.model_dump_json()))
             .execute()
       )
+      print(a.keywords)
       print(response)
     except Exception as exception:
       print(exception)
