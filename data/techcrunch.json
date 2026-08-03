@@ -4,8 +4,43 @@
   "description": "Startup and Technology News",
   "language": "en-US",
   "generator": "https://wordpress.org/?v=6.9.5",
-  "published": "2026-08-02T03:08:43.000Z",
+  "published": "2026-08-02T22:14:58.000Z",
   "entries": [
+    {
+      "id": "https://techcrunch.com/?p=3149059",
+      "title": "The global memory shortage hits the MacBook Air",
+      "link": "https://techcrunch.com/2026/08/02/the-global-memory-shortage-hits-the-macbook-air/",
+      "published": "2026-08-02T21:33:59.000Z",
+      "description": "The global memory chip shortage appears to be affecting the availability of Apple’s most popular Mac."
+    },
+    {
+      "id": "https://techcrunch.com/?p=3149056",
+      "title": "Sam Altman and AI’s decel debate",
+      "link": "https://techcrunch.com/2026/08/02/sam-altman-and-ais-decel-debate/",
+      "published": "2026-08-02T20:54:22.000Z",
+      "description": "On the latest episode of Equity, we discuss why Sam Altman has calling on the industry to \"pace the rate of AI development.\""
+    },
+    {
+      "id": "https://techcrunch.com/?p=3149041",
+      "title": "Malaysia is reportedly shutting down Balaji Srinivasan’s Network School",
+      "link": "https://techcrunch.com/2026/08/02/malaysia-is-reportedly-shutting-down-balaji-srinivasans-network-school/",
+      "published": "2026-08-02T17:05:07.000Z",
+      "description": "Let's see how this \"frontier community for techno-optimists\" is doing ..."
+    },
+    {
+      "id": "https://techcrunch.com/?p=3148962",
+      "title": "TechCrunch Mobility: Two roads diverged — for robotaxis",
+      "link": "https://techcrunch.com/2026/08/02/techcrunch-mobility-two-roads-diverged-for-robotaxis/",
+      "published": "2026-08-02T16:05:00.000Z",
+      "description": "Welcome back to TechCrunch Mobility, your hub for the future of transportation and now, more than ever, the role AI is playing in it."
+    },
+    {
+      "id": "https://techcrunch.com/?p=3146922",
+      "title": "These App Store hidden gems prove there’s still room for great software in the AI era",
+      "link": "https://techcrunch.com/2026/08/02/these-app-store-hidden-gems-prove-theres-still-room-for-great-software-in-the-ai-era/",
+      "published": "2026-08-02T15:23:19.000Z",
+      "description": "Despite predictions that AI agents could make traditional apps obsolete, developers are shipping new software faster than ever. From smarter bookmarking tools and neighborhood marketplaces to digital pen pals and nature journals, here are the..."
+    },
     {
       "id": "https://techcrunch.com/?p=3146052",
       "title": "Inside the London hacker house taking a stand against founder burnout",
@@ -110,41 +145,6 @@
       "link": "https://techcrunch.com/2026/07/31/fresh-off-its-wiz-payout-index-ventures-raises-2b-across-three-funds/",
       "published": "2026-07-31T19:39:51.000Z",
       "description": "The new funding brings Index's total available investing capital to $3.5 billion."
-    },
-    {
-      "id": "https://techcrunch.com/?p=3148210",
-      "title": "VC-backed startups commit more fraud, and researchers think they know why",
-      "link": "https://techcrunch.com/2026/07/31/vc-backed-startups-commit-more-fraud-and-researchers-think-they-know-why/",
-      "published": "2026-07-31T19:00:00.000Z",
-      "description": "New research from the U.K.’s Imperial College and France’s Emlyon Business School mapped out how Silicon Valley founders commit fraud — and the role investors play."
-    },
-    {
-      "id": "https://techcrunch.com/?post_type=tc_video&p=3148833",
-      "title": "Sam Altman isn’t the only one who wants to pump the brakes on AI",
-      "link": "https://techcrunch.com/video/sam-altman-isnt-the-only-one-who-wants-to-pump-the-brakes-on-ai/",
-      "published": "2026-07-31T17:26:32.000Z",
-      "description": "After years of pushing full speed ahead on AI,&#160;OpenAI CEO&#160;Sam Altman says&#160;maybe it’s&#160;time for the AI industry to “pace” itself. The comments came&#160;just days after one of OpenAI&#8217;s own models broke out of its test..."
-    },
-    {
-      "id": "https://techcrunch.com/?p=3148803",
-      "title": "Snapchat no longer rewards fully AI-generated Spotlight content",
-      "link": "https://techcrunch.com/2026/07/31/snapchat-no-longer-rewards-fully-ai-generated-spotlight-content/",
-      "published": "2026-07-31T16:49:08.000Z",
-      "description": "Snapchat has adjusted its recommendation systems to ensure that only videos created by real people are eligible for Spotlight recommendations, taking a stance against AI slop."
-    },
-    {
-      "id": "https://techcrunch.com/?p=3148730",
-      "title": "Siri AI could come with a paywall for power users",
-      "link": "https://techcrunch.com/2026/07/31/siri-ai-could-come-with-a-paywall-for-power-users/",
-      "published": "2026-07-31T16:08:18.000Z",
-      "description": "Apple CEO Tim Cook envisions users being able to buy more compute for Siri AI via Apple's existing iCloud+ subscriptions."
-    },
-    {
-      "id": "https://techcrunch.com/?p=3148673",
-      "title": "GM and Ford are talking less and less about EVs",
-      "link": "https://techcrunch.com/2026/07/31/gm-and-ford-are-talking-less-and-less-about-evs/",
-      "published": "2026-07-31T15:47:46.000Z",
-      "description": "The leading U.S. automakers are mentioning EVs on their investor calls at pre-pandemic rates, according to new data from TechCrunch and Hudson Labs."
     }
   ]
 }
