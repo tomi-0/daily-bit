@@ -1,6 +1,7 @@
 import logging
 import feedparser
 import json
+import os
 from email.utils import parsedate_to_datetime
 from app.services import (
   openai_client,
@@ -27,8 +28,10 @@ def fetch_tech_crunch() -> list[RawArticle]:
   feed = feedparser.parse(tech_crunch_url)
   articles = []
 
+  LOGGER.info("Fetched RSS Feed for TechCrunch")
+
   # Processes top 5 articles from feed
-  for entry in feed.entries[:1]:
+  for entry in feed.entries[:6]:
     article = build_raw_article(
       title= entry.get("title", ""),
       summary= entry.get("summary", ""),
@@ -38,6 +41,8 @@ def fetch_tech_crunch() -> list[RawArticle]:
       published_at= parsedate_to_datetime(entry.published).date() if entry.get("published") else ""
     )
     articles.append(article)
+
+  LOGGER.info("Finished processing articles into RawArticle model")
 
   return articles
 
@@ -54,10 +59,11 @@ def pick_top_articles(articles: list[RawArticle]) -> list[RawArticle]:
 
 
 def process_article(client: AzureOpenAI, articles: list[RawArticle]) -> list[LLMOutput]:
-  deployment = "gpt-4o-mini"
+  deployment = os.getenv("DEPLOYMENT")
   output = []
 
   # Collects structured LLMOutput from LLM
+  LOGGER.info("Processing RawArticles")
   for article in articles:
     response = client.chat.completions.parse(
         messages=[
@@ -65,7 +71,8 @@ def process_article(client: AzureOpenAI, articles: list[RawArticle]) -> list[LLM
             "role": "system",
             "content": "Summarize the article using ONLY the information provided below. "
                       "Do not add facts, figures, or details that are not present in the source text. "
-                      "If the provided text is too short to summarize meaningfully, say so rather than inventing content.",
+                      "If the provided text is too short to summarize meaningfully, say so rather than inventing content."
+                      "Add this summary to the {longer_summary} attribute",
           },
           {
               "role": "user",
@@ -78,22 +85,34 @@ def process_article(client: AzureOpenAI, articles: list[RawArticle]) -> list[LLM
         response_format=LLMOutput
     )
 
-    output.append(response.choices[0].message.content)
-    print(response.choices[0].message.content)
+    llm_json = response.choices[0].message.content
+    LOGGER.info(llm_json)
 
-  return articles
+    try: 
+      llm_output = LLMOutput.model_validate_json(llm_json)
+    except ValidationError as e:
+      LOGGER.warning("Skipping invalid article: %s", e)
+      llm_output = None
+
+    output.append(llm_output)
+
+  LOGGER.info("Finished processing articles")
+
+  return output
 
 if __name__ == "__main__":
-
+  # Initialise clients
   openai_client = openai_client()
   supabase = supabase_client()
 
+  # Fetch Data
   tech_crunch_raw_articles = fetch_tech_crunch()
-  
-  print(tech_crunch_raw_articles[0])
+
+  # Convert to pydantic LLMOutput models
   processed_articles = process_article(openai_client, tech_crunch_raw_articles)
 
-  print(f"\nSaving to database\n")
+  # Store LLMOutput to Supabase for FE
+  LOGGER.info(f"\nSaving to database\n")
   for a in processed_articles:
     try:
       response = (
@@ -101,13 +120,7 @@ if __name__ == "__main__":
             .insert(json.loads(a.model_dump_json()))
             .execute()
       )
-      print(a.keywords)
-      print(response)
     except Exception as exception:
-      print(exception)
+      LOGGER.exception(exception)
 
-
-  # Add feed data to new json file
-  # with open("tech_crunch.json", "w") as f:
-  #   f.write(json.dumps(feed, indent=2))
-  # LOGGER.info("Saved feed from TechCrunch")
+  LOGGER.info("Finished processing articles")
