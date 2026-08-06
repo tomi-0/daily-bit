@@ -1,7 +1,6 @@
 import logging
 import feedparser
 import json
-import os
 from email.utils import parsedate_to_datetime
 from app.services import (
   openai_client,
@@ -11,6 +10,7 @@ from openai import AzureOpenAI
 from pydantic import ValidationError
 
 from app.models.articles import RawArticle, LLMOutput
+from app.config import settings
 
 LOGGER = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ def fetch_tech_crunch() -> list[RawArticle]:
   LOGGER.info("Fetched RSS Feed for TechCrunch")
 
   # Processes top 5 articles from feed
-  for entry in feed.entries[:6]:
+  for entry in feed.entries[:5]:
     article = build_raw_article(
       title= entry.get("title", ""),
       summary= entry.get("summary", ""),
@@ -59,7 +59,7 @@ def pick_top_articles(articles: list[RawArticle]) -> list[RawArticle]:
 
 
 def process_article(client: AzureOpenAI, articles: list[RawArticle]) -> list[LLMOutput]:
-  deployment = os.getenv("DEPLOYMENT")
+  deployment = settings.deployment
   output = []
 
   # Collects structured LLMOutput from LLM
@@ -102,17 +102,20 @@ def process_article(client: AzureOpenAI, articles: list[RawArticle]) -> list[LLM
 
 if __name__ == "__main__":
   # Initialise clients
+  LOGGER.info("Initialising clients")
   openai_client = openai_client()
   supabase = supabase_client()
 
   # Fetch Data
+  LOGGER.info("Fetching data from RSS feed")
   tech_crunch_raw_articles = fetch_tech_crunch()
 
   # Convert to pydantic LLMOutput models
+  LOGGER.info("Processing articles into Pydantic models")
   processed_articles = process_article(openai_client, tech_crunch_raw_articles)
 
   # Store LLMOutput to Supabase for FE
-  LOGGER.info(f"\nSaving to database\n")
+  LOGGER.info("Saving to database")
   for a in processed_articles:
     try:
       response = (

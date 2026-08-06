@@ -1,12 +1,10 @@
-from dotenv import load_dotenv
 from openai import AzureOpenAI
-import os
+from app.config import settings
 
 def openai_client():
-  load_dotenv(".env")
 
-  azure_openai_api_key = os.getenv("AZURE_OPENAI_API_KEY")
-  azure_openai_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+  azure_openai_api_key = settings.azure_openai_api_key
+  azure_openai_endpoint = settings.azure_openai_endpoint
 
   client = AzureOpenAI(
     api_version="2024-12-01-preview",
