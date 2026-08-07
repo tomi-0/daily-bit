@@ -2,14 +2,15 @@ import logging
 import feedparser
 import json
 from email.utils import parsedate_to_datetime
-from services import (
+from server.app.services import (
   openai_client,
   supabase_client
 )
 from openai import AzureOpenAI
 from pydantic import ValidationError
 
-from models.articles import RawArticle, LLMOutput
+from server.app.models.articles import RawArticle, LLMOutput
+from server.app.config import settings
 
 LOGGER = logging.getLogger(__name__)
 

@@ -3,4 +3,5 @@ pydantic==2.13.4
 openai==2.52.0
 dotenv==0.9.9
 supabase==2.31.0
+pydantic_settings
 fastapi
