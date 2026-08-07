@@ -40,9 +40,10 @@ jobs:
         env:
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
-          # should move to variables instead
-          DEPLOYMENT: ${{ secrets.DEPLOYMENT }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          DEPLOYMENT: ${{ vars.DEPLOYMENT }}
+          API_VERSION: ${{ vars.API_VERSION }}
+          MODEL_NAME: ${{ vars.MODEL_NAME }}
         run: python -m scripts.run_pipeline
 
