@@ -1,6 +1,8 @@
 import logging
 import feedparser
 import json
+import finnhub
+from datetime import date
 from email.utils import parsedate_to_datetime
 from app.services import (
   openai_client,
@@ -8,11 +10,13 @@ from app.services import (
 )
 from openai import AzureOpenAI
 from pydantic import ValidationError
+from finnhub import Client
 
 from app.models.articles import RawArticle, LLMOutput
 from app.config import settings
 
 LOGGER = logging.getLogger(__name__)
+
 
 def build_raw_article(**kwargs) -> RawArticle | list:
   try:
@@ -47,8 +51,23 @@ def fetch_tech_crunch() -> list[RawArticle]:
   return articles
 
 # Fetches articles for financial news
-def fetch_finance():
-  pass
+def fetch_finnhub(finnhub_client: Client) -> list[RawArticle]:
+  # Fetches articles FROM Finnhub
+  finance_news = finnhub_client.general_news("general")
+  raw_articles = []
+
+  for a in finance_news[:5]:
+    article = build_raw_article(
+      title= a.get("headline", ""),
+      summary= a.get("summary", ""), 
+      source_url= a.get("url", ""),
+      source_name= a.get("source", ""),
+      category= "FINANCE",
+      published_at= date.fromtimestamp(a.get("datetime")) if a.get("datetime") else ""
+    )
+    raw_articles.append(article)
+  return raw_articles
+
 
 # Fetches articles for fintech news
 def fetch_fintech():
@@ -100,30 +119,68 @@ def process_article(client: AzureOpenAI, articles: list[RawArticle]) -> list[LLM
 
   return output
 
+
 if __name__ == "__main__":
   # Initialise clients
   LOGGER.info("Initialising clients")
   openai_client = openai_client()
   supabase = supabase_client()
+  finnhub_client = finnhub.Client(api_key=settings.finnhub_api_key)
 
   # Fetch Data
   LOGGER.info("Fetching data from RSS feed")
   tech_crunch_raw_articles = fetch_tech_crunch()
 
+  LOGGER.info("Fetching data from Finnhub API")
+  finnhub_raw_articles = fetch_finnhub(finnhub_client)
+
   # Convert to pydantic LLMOutput models
   LOGGER.info("Processing articles into Pydantic models")
-  processed_articles = process_article(openai_client, tech_crunch_raw_articles)
+  tech_articles = process_article(openai_client, tech_crunch_raw_articles)
+  finance_articles = process_article(openai_client, finnhub_raw_articles)
+
+  # Empty both databases
+  try:
+    response = (
+      supabase.table("tech")
+      .delete()
+      .neq("category", "NONE")
+      .execute()
+    )
+  except Exception as exception:
+    LOGGER.exception(exception)
+
+  try:
+    response = (
+      supabase.table("finance")
+      .delete()
+      .neq("category", "NONE")
+      .execute()
+    )
+  except Exception as exception:
+    LOGGER.exception(exception)
 
   # Store LLMOutput to Supabase for FE
-  LOGGER.info("Saving to database")
-  for a in processed_articles:
+  LOGGER.info("Saving tech articles to database")
+  for a in tech_articles:
     try:
       response = (
-          supabase.table("article")
+          supabase.table("tech")
             .insert(json.loads(a.model_dump_json()))
             .execute()
       )
     except Exception as exception:
       LOGGER.exception(exception)
 
-  LOGGER.info("Finished processing articles")
+  LOGGER.info("Saving finance articles to database")
+  for a in finance_articles:
+      try:
+        response = (
+            supabase.table("finance")
+              .insert(json.loads(a.model_dump_json()))
+              .execute()
+        )
+      except Exception as exception:
+        LOGGER.exception(exception)
+
+  LOGGER.info("Finished processing all fetched articles")

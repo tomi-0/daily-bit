@@ -1,9 +1,11 @@
+import Article from "../components/Article"
 
-
-const Tech = () => {
+const Tech = ( {techArticles} ) => {
 
   return (
-    <h1>Hello this is the Tech page</h1>
+    <>
+      {techArticles.map( article => <Article key={article.id} article={article}/>)}
+    </>
   )
 }
 

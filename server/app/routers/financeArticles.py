@@ -1,16 +1,16 @@
 from fastapi import APIRouter
 from app.services.supabase import supabase_client
 
-articlesRouter = APIRouter()
+financeRouter = APIRouter()
 
 supabase = supabase_client()
 
-@articlesRouter.get('/api/articles')
+@financeRouter.get("/api/finance")
 async def get_articles():
 
   try:
     response = (
-       supabase.table('article')
+       supabase.table('finance')
        .select("*")
        .execute()
     )
@@ -24,11 +24,11 @@ async def get_articles():
       "error": f"Couldn't fetch articles from database: {e}"
     }
 
-@articlesRouter.delete("/api/articles/{id}")
+@financeRouter.delete("/api/finance/{id}")
 async def delete_articles(id: str):
   try:
     response = (
-      supabase.table("article")
+      supabase.table("finance")
       .delete()
       .eq("id", id)
       .execute()

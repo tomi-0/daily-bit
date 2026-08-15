@@ -15,6 +15,9 @@ class Settings(BaseSettings):
   supabase_url: str 
   supabase_key: str
 
+  # Finnhub Settings
+  finnhub_api_key: str
+
 settings = Settings()
 
 
