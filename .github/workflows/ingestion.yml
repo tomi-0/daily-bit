@@ -42,6 +42,7 @@ jobs:
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
           DEPLOYMENT: ${{ vars.DEPLOYMENT }}
           API_VERSION: ${{ vars.API_VERSION }}
           MODEL_NAME: ${{ vars.MODEL_NAME }}
