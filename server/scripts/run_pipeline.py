@@ -84,36 +84,41 @@ def process_article(client: AzureOpenAI, articles: list[RawArticle]) -> list[LLM
   # Collects structured LLMOutput from LLM
   LOGGER.info("Processing RawArticles")
   for article in articles:
-    response = client.chat.completions.parse(
-        messages=[
-          {
-            "role": "system",
-            "content": "Summarize the article using ONLY the information provided below. "
-                      "Do not add facts, figures, or details that are not present in the source text. "
-                      "If the provided text is too short to summarize meaningfully, say so rather than inventing content."
-                      "Add this summary to the {longer_summary} attribute",
-          },
-          {
-              "role": "user",
-              "content": f"Title: {article.title}\nSource: {article.source_name}\nText: {article.summary} Source URL:{article.source_url}",
-          }
-        ],
-        max_tokens=4096,
-        temperature=0.2,
-        model=deployment,
-        response_format=LLMOutput
-    )
+    try:
+      response = client.chat.completions.parse(
+          messages=[
+            {
+              "role": "system",
+              "content": "Summarize the article using ONLY the information provided below. "
+                        ""
+                        "Do not add facts, figures, or details that are not present in the source text. "
+                        "If the provided text is too short to summarize meaningfully, say so rather than inventing content."
+                        "Add this summary to the {longer_summary} attribute",
+            },
+            {
+                "role": "user",
+                "content": f"Title: {article.title}\nSource: {article.source_name}\nText: {article.summary} Source URL:{article.source_url}",
+            }
+          ],
+          max_tokens=4096,
+          temperature=0.2,
+          model=deployment,
+          response_format=LLMOutput
+      )
 
-    llm_json = response.choices[0].message.content
-    LOGGER.info(llm_json)
+      llm_json = response.choices[0].message.content
+      LOGGER.info(llm_json)
 
-    try: 
-      llm_output = LLMOutput.model_validate_json(llm_json)
-    except ValidationError as e:
-      LOGGER.warning("Skipping invalid article: %s", e)
-      llm_output = None
+      try: 
+        llm_output = LLMOutput.model_validate_json(llm_json)
+      except ValidationError as e:
+        LOGGER.warning("Skipping invalid article: %s", e)
+        llm_output = None
 
-    output.append(llm_output)
+      output.append(llm_output)
+
+    except Exception as e:
+      LOGGER.exception(f"Error whilst processing article: {e}")
 
   LOGGER.info("Finished processing articles")
 
